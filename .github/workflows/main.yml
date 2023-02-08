@@ -52,6 +52,6 @@ jobs:
 
     - name: Deploy to AKS
       run: |
-        kubectl create deploy hgmicroservice --image=hgacr912.azurecr.io/hgmicrosvc:v3 --replicas=2
+        kubectl apply deploy hgmicroservice --image=hgacr912.azurecr.io/hgmicrosvc:v3 --replicas=2
         sleep 10
         kubectl get deploy,svc,pods
