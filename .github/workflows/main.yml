@@ -38,12 +38,13 @@ jobs:
       
     - name: Login to Docker Hub
       run: |
-        
-        az acr login -n $DOCKER_REPOSITORY --expose-token 
+        az acr login -n $DOCKER_REPOSITORY --expose-token
+        # docker push $DOCKER_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
         
     - name: Push Image to Docker Hub
       run:
-        docker push $DOCKER_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
+        az acr build --registry hgacr912 --image hgmicrosvc:v3 .
+        # docker push $DOCKER_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
         
     - name: Azure Kubernetes set context
       uses: Azure/aks-set-context@v1
