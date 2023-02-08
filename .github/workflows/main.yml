@@ -5,6 +5,8 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  
+  workflow_dispatch:
     
 env:
   DOCKER_REPOSITORY: hgacr912.azurecr.io
