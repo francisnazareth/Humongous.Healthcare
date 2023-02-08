@@ -1,0 +1,59 @@
+name: Build & Release to AKS
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    
+env:
+  DOCKER_REPOSITORY: hgacr912.azurecr.io
+  IMAGE_TAG: ${{ github.run_number }}
+  IMAGE_NAME: webapp
+  
+  # DOCKER_REPOSITORY_PASSWORD: "kHPV63Du14WQmo5P6rk4x2a0QikAshzxLxEUjE5Dik+ACRAv4uiX"
+  # AZURE_CREDENTIALS: '{"appId": "ac0ca313-ae1c-44e8-b71a-28a76df2401f","displayName": "spn-team1-workshop-apps-01357","password": "w-I8Q~N~.KTJTmtQvfq1cxJOU6couKMsgqeg1bo6","tenant": "16b3c013-d300-468d-ac64-7eda0820b6d3"}'
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag webapp:$IMAGE_TAG
+      
+    - name: Tag the Docker image
+      run: docker tag webapp:$IMAGE_TAG $DOCKER_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
+      
+    - name: Login to Docker Hub
+      run: |
+        # echo $DOCKER_REPOSITORY_PASSWORD | docker login -u $DOCKER_REPOSITORY --password-stdin
+        echo "${{ secrets.DOCKER_REPOSITORY_PASSWORD }}" | docker login -u $DOCKER_REPOSITORY --password-stdin
+        
+    - name: Push Image to Docker Hub
+      run:
+        docker push $DOCKER_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
+        
+    - name: Azure Kubernetes set context
+      uses: Azure/aks-set-context@v1
+      with:
+        # Azure credentials i.e. output of `az ad sp create-for-rbac --sdk-auth`
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        # Resource Group Name
+        resource-group: refinitiv-rg 
+        # AKS Cluster Name
+        cluster-name: refinitiv-aks
+
+    - name: Deploy to Kubernetes cluster
+      uses: Azure/k8s-deploy@v1.3
+      with:
+        # Choose the target Kubernetes namespace. If the namespace is not provided, the commands will run in the default namespace.
+        namespace: default
+        # Path to the manifest files which will be used for deployment.
+        manifests: |
+          02_kubernetes_aks/namespace.yaml
+          02_kubernetes_aks/app-deploy.yaml
