@@ -44,9 +44,9 @@ jobs:
         # Azure credentials i.e. output of `az ad sp create-for-rbac --sdk-auth`
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         # Resource Group Name
-        resource-group: refinitiv-rg 
+        resource-group: rg-learninglab
         # AKS Cluster Name
-        cluster-name: refinitiv-aks
+        cluster-name: hg-poc-aks
 
     - name: Deploy to Kubernetes cluster
       uses: Azure/k8s-deploy@v1.3
