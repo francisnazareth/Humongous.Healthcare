@@ -30,7 +30,8 @@ jobs:
       
     - uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        creds: '{"clientId":"ac0ca313-ae1c-44e8-b71a-28a76df2401f","clientSecret":"XIU8Q~GMwisQP2MgYtXQLWplQnnUsg5~yjk_ubMP","subscriptionId":"cb56ce60-e634-4951-8ac8-ec94c671d4e8","tenantId":"16b3c013-d300-468d-ac64-7eda0820b6d3"}'
+        # creds: ${{ secrets.AZURE_CREDENTIALS }}
     
     - run: |
         az aks list -o table
