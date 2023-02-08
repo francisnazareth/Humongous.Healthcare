@@ -19,12 +19,19 @@ namespace Humongous.Healthcare.Controllers
         }
 
 
-        // GET /HealthCheck
+        // GET /HealthCheck?PatientID=xxx
         [HttpGet]
         [ProducesResponseType(typeof(List<HealthCheck>), 200)]
-        public async Task<IActionResult> List()
+        public async Task<IActionResult> List([FromQuery] int? PatientID)
         {
-            return Ok(await _cosmosDbService.GetMultipleAsync("SELECT * FROM c"));
+            if (PatientID == null)
+            {
+                return Ok(await _cosmosDbService.GetMultipleAsync("SELECT * FROM c"));
+            }
+            else
+            {
+                return Ok(await _cosmosDbService.GetMultipleAsync($"SELECT * FROM c WHERE c.PatientID = {PatientID}"));
+            }
         }
 
         // GET /HealthCheck/23dbf68d-3f40-41de-ae1b-8e3558cd17f9
@@ -34,6 +41,9 @@ namespace Humongous.Healthcare.Controllers
         {
             return Ok(await _cosmosDbService.GetAsync(id));
         }
+
+
+
 
         // POST /HealthCheck
         [HttpPost]
