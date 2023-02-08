@@ -37,22 +37,19 @@ jobs:
         az aks list -o table
         az acr list -o table
 
-    - name: Login to Docker Hub
+    - name: Login & Push to ACR
       run: |
         az acr login -n $DOCKER_REPOSITORY --expose-token
-        
-    - name: Push Image to Docker Hub
-      run:
         az acr build --registry $DOCKER_REPOSITORY --image hgmicrosvc:v3 .
         
-    - name: Azure Kubernetes set context
+    - name: Connect to AKS
       uses: Azure/aks-set-context@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         resource-group: rg-learninglab
         cluster-name: hg-poc-aks
 
-    - name: Deploy to Kubernetes cluster
+    - name: Deploy to AKS
       run: |
         kubectl create deploy hgmicroservice --image=hgacr912.azurecr.io/hgmicrosvc:v3 --replicas=2
         sleep 10
