@@ -38,6 +38,7 @@ jobs:
         az acr list -o table
 
     - name: Login & Push to ACR
+      continue-on-error: true
       run: |
         az acr login -n $DOCKER_REPOSITORY --expose-token
         az acr build --registry $DOCKER_REPOSITORY --image hgmicrosvc:v3 .
