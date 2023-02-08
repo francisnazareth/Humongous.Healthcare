@@ -49,19 +49,12 @@ jobs:
     - name: Azure Kubernetes set context
       uses: Azure/aks-set-context@v1
       with:
-        # Azure credentials i.e. output of `az ad sp create-for-rbac --sdk-auth`
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-        # Resource Group Name
         resource-group: rg-learninglab
-        # AKS Cluster Name
         cluster-name: hg-poc-aks
 
     - name: Deploy to Kubernetes cluster
-      uses: Azure/k8s-deploy@v1.3
-      with:
-        # Choose the target Kubernetes namespace. If the namespace is not provided, the commands will run in the default namespace.
-        namespace: default
-        # Path to the manifest files which will be used for deployment.
-        manifests: |
-          02_kubernetes_aks/namespace.yaml
-          02_kubernetes_aks/app-deploy.yaml
+      run: |
+        kubectl create deploy hgmicroservice --image=hgacr912.azurecr.io/hgmicrosvc:v3 --replicas=2
+        sleep 10
+        kubectl get deploy,svc,pods
